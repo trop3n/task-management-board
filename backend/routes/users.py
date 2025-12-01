@@ -5,7 +5,7 @@ from models import User
 users_bp = Blueprint('users', __name__, url_prefix='/api/users')
 
 
-@users_bp.route('/', methods=['GET'])
+@users_bp.route('/', methods=['GET'], strict_slashes=False)
 @jwt_required()
 def get_users():
     """Get all users (for task assignment)"""

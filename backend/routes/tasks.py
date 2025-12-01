@@ -4,9 +4,10 @@ from models import db, Task, User
 from datetime import datetime
 
 tasks_bp = Blueprint('tasks', __name__, url_prefix='/api/tasks')
+tasks_bp.url_map = None  # Allow strict_slashes to be set per route
 
 
-@tasks_bp.route('/', methods=['GET'])
+@tasks_bp.route('/', methods=['GET'], strict_slashes=False)
 @jwt_required()
 def get_tasks():
     """Get all tasks"""
@@ -26,12 +27,12 @@ def get_task(task_id):
     return jsonify(task.to_dict()), 200
 
 
-@tasks_bp.route('/', methods=['POST'])
+@tasks_bp.route('/', methods=['POST'], strict_slashes=False)
 @jwt_required()
 def create_task():
     """Create a new task"""
     data = request.get_json()
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
 
     if not data or 'title' not in data:
         return jsonify({'error': 'Title is required'}), 400

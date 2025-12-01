@@ -1,9 +1,17 @@
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file FIRST, before importing config
+load_dotenv()
+
+# Debug: Print the DATABASE_URL to verify it's loaded
+print(f"DEBUG: DATABASE_URL = {os.environ.get('DATABASE_URL')}")
+
 from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from config import config
 from models import db
-import os
 
 
 def create_app(config_name='default'):
@@ -11,9 +19,13 @@ def create_app(config_name='default'):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
 
+    # Debug: Print the actual config being used
+    print(f"DEBUG: Config name = {config_name}")
+    print(f"DEBUG: SQLALCHEMY_DATABASE_URI = {app.config.get('SQLALCHEMY_DATABASE_URI')}")
+
     # Initialize extensions
     db.init_app(app)
-    CORS(app)
+    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
     JWTManager(app)
 
     # Register blueprints
